@@ -1,5 +1,17 @@
 import pygame
 
+def hitscreenedge():
+    if x < 0:
+        return True
+    if y < 0:
+        return True
+    if (x + width) > 500:
+        return True
+    if (y + height) > 500:
+        return True
+
+    return  False
+
 pygame.init()
 
 win = pygame.display.set_mode((500, 500))
@@ -35,7 +47,10 @@ while run:
     if keys[pygame.K_DOWN]:
         y += vel
 
-    win.fill((0, 0, 0))
+    background=(0, 0, 0)
+    if hitscreenedge():
+        background=(234, 234, 122)
+    win.fill(background)
     pygame.draw.rect(win, (255, 0, 0), (x, y, width, height))
     pygame.display.update()
 
