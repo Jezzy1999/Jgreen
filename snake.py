@@ -18,11 +18,12 @@ win = pygame.display.set_mode((500, 500))
 
 pygame.display.set_caption("First Game")
 
-x = 50
-y = 50
+x = 250
+y = 250
 width = 40
 height = 60
-vel = 5
+velx = 0
+vely = 0
 
 run = True
 
@@ -36,16 +37,19 @@ while run:
     keys = pygame.key.get_pressed()
 
     if keys[pygame.K_LEFT]:
-        x -= vel
-
+        velx = -5
+        vely = 0
     if keys[pygame.K_RIGHT]:
-        x += vel
-
+        velx = 5
+        vely = 0
     if keys[pygame.K_UP]:
-        y -= vel
-
+        vely = -5
+        velx = 0
     if keys[pygame.K_DOWN]:
-        y += vel
+        vely = 5
+        velx = 0
+    x += velx
+    y += vely
 
     background=(0, 0, 0)
     if hitscreenedge():
