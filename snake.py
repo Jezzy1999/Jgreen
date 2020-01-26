@@ -37,17 +37,24 @@ while run:
     keys = pygame.key.get_pressed()
 
     if keys[pygame.K_LEFT]:
-        velx = -5
-        vely = 0
+        if not velx == 5:
+            velx = -5
+            vely = 0
+
     if keys[pygame.K_RIGHT]:
-        velx = 5
-        vely = 0
+        if not velx == -5:
+            velx = 5
+            vely = 0
+
     if keys[pygame.K_UP]:
-        vely = -5
-        velx = 0
+        if not vely == 5:
+            vely = -5
+            velx = 0
+
     if keys[pygame.K_DOWN]:
-        vely = 5
-        velx = 0
+        if not vely == -5:
+            vely = 5
+            velx = 0
     x += velx
     y += vely
 
