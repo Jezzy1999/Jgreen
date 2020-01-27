@@ -25,6 +25,9 @@ height = 60
 velx = 0
 vely = 0
 
+image = pygame.image.load(r'C:\Users\j0s3p\PycharmProjects\Jgreen\snake head.jpg')
+head = pygame.transform.scale(image, (width, height))
+
 run = True
 
 while run:
@@ -62,7 +65,8 @@ while run:
     if hitscreenedge():
         background=(234, 234, 122)
     win.fill(background)
-    pygame.draw.rect(win, (255, 0, 0), (x, y, width, height))
+    #pygame.draw.rect(win, (255, 0, 0), (x, y, width, height))
+    win.blit(head, (x, y))
     pygame.display.update()
 
 pygame.quit()
