@@ -58,6 +58,7 @@ while run:
         if not vely == -5:
             vely = 5
             velx = 0
+
     x += velx
     y += vely
 
@@ -65,7 +66,27 @@ while run:
     if hitscreenedge():
         background=(234, 234, 122)
     win.fill(background)
-    #pygame.draw.rect(win, (255, 0, 0), (x, y, width, height))
+
+    xbody = x
+    ybody = y
+
+    if velx == -5:
+        xbody= x + width
+        ybody= y
+
+    if velx == 5:
+        xbody = x-width
+        ybody = y
+
+    if vely == 5:
+        xbody = x
+        ybody = y - height
+    if vely == -5:
+        xbody = x
+        ybody = y + height
+
+    pygame.draw.rect(win, (255, 0, 0), (xbody, ybody, width, height))
+
     win.blit(head, (x, y))
     pygame.display.update()
 
