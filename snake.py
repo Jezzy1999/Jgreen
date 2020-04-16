@@ -25,6 +25,9 @@ class Tail():
 
     def update(self, x, y, speed, direction):
         if self.sections:
+
+            currentx = x
+            currenty = y
             total_length = 0
             self.sections[0]["length"] += speed
 
@@ -39,30 +42,35 @@ class Tail():
                 else:
                     length = section["length"]
                     if section["direction"] == LEFT:
-                        xsection = section["pos"][0] - length
-                        ysection = section["pos"][1]
-                        sectionwidth = length
-                        sectionheight = height
+                        xsection = currentx
+                        ysection = currenty
+                        endx = xsection + length
+                        endy = currenty
+                        currentx += length
                     elif section["direction"] == RIGHT:
-                        xsection = section["pos"][0]
-                        ysection = section["pos"][1]
-                        sectionwidth = length
-                        sectionheight = height
+                        xsection = currentx
+                        ysection = currenty
+                        endx = xsection - length
+                        endy = currenty
+                        currentx -= length
                     elif section["direction"] == UP:
-                        xsection = section["pos"][0]
-                        ysection = section["pos"][1] - length
-                        sectionwidth = width
-                        sectionheight = length
+                        xsection = currentx
+                        ysection = currenty
+                        endx = xsection
+                        endy = ysection + length
+                        currenty += length
                     elif section["direction"] == DOWN:
-                        xsection = section["pos"][0]
-                        ysection = section["pos"][1]
-                        sectionwidth = width
-                        sectionheight = length
+                        xsection = currentx 
+                        ysection = currenty
+                        endx = xsection
+                        endy = currenty - length
+                        currenty = endy
 
-                    pygame.draw.rect(
+                    pygame.draw.line(
                         win,
                         (255, 0, 0),
-                        (xsection, ysection, sectionwidth, sectionheight)
+                        (xsection, ysection), 
+                        (endx, endy)
                     )
 
             for section in sections_to_remove:
@@ -84,8 +92,8 @@ pygame.display.set_caption("First Game")
 
 x = 250
 y = 250
-width = 40
-height = 60
+width = 8
+height = 8
 speed = 0
 
 image = pygame.image.load('./content/snakehead.jpg')
@@ -120,7 +128,7 @@ while run:
             tail.changed_direction(x, y, direction)
 
     if keys[pygame.K_DOWN]:
-        if not direction == UP:
+        if direction != UP and direction != DOWN:
             direction = DOWN
             tail.changed_direction(x, y, direction)
 
@@ -143,7 +151,8 @@ while run:
 
     tail.update(x, y, speed, direction)
 
-    win.blit(head, (x, y))
+    #win.blit(head, (x, y))
+    pygame.draw.circle(win, (255,0,0), (x, y), width, 1)
     pygame.display.update()
 
 pygame.quit()
