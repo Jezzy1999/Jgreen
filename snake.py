@@ -67,7 +67,7 @@ class Tail():
                         ysection = currenty - initial_radius
                         currenty -= length
 
-                    while piece_counter < length:
+                    while (piece_counter + tailpiece_diameter) < length:
                         pygame.draw.circle(
                             win,
                             (255, 0, 0),
@@ -107,6 +107,7 @@ speed = 0
 head_diameter = 16
 head_radius = head_diameter / 2
 tailpiece_diameter = 8
+tailpiece_radius = tailpiece_diameter / 2
 
 image = pygame.image.load('./content/snakehead.jpg')
 head = pygame.transform.scale(image, (width, height))
