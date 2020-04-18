@@ -31,6 +31,8 @@ class Tail():
             total_length = 0
             self.sections[0]["length"] += speed
 
+            piece_counter = 0
+            tail_pieces = []
             sections_to_remove = []
             for section in self.sections:
                 total_length += section["length"]
@@ -41,37 +43,50 @@ class Tail():
                     sections_to_remove.append(section)
                 else:
                     length = section["length"]
+                    stepx = 0
+                    stepy = 0
                     if section["direction"] == LEFT:
+                        stepx = tailpiece_size
                         xsection = currentx
                         ysection = currenty
                         endx = xsection + length
                         endy = currenty
                         currentx += length
                     elif section["direction"] == RIGHT:
+                        stepx = -tailpiece_size
                         xsection = currentx
                         ysection = currenty
                         endx = xsection - length
                         endy = currenty
                         currentx -= length
                     elif section["direction"] == UP:
+                        stepy = tailpiece_size
                         xsection = currentx
                         ysection = currenty
                         endx = xsection
                         endy = ysection + length
                         currenty += length
                     elif section["direction"] == DOWN:
+                        stepy = -tailpiece_size
                         xsection = currentx 
                         ysection = currenty
                         endx = xsection
                         endy = currenty - length
                         currenty = endy
 
-                    pygame.draw.line(
-                        win,
-                        (255, 0, 0),
-                        (xsection, ysection), 
-                        (endx, endy)
-                    )
+                    while piece_counter < length:
+                        pygame.draw.circle(
+                            win,
+                            (255, 0, 0),
+                            (int(xsection + (stepx / 2)), int(ysection + (stepy / 2))), 
+                            tailpiece_size,
+                            1
+                        )
+                        xsection += stepx
+                        ysection += stepy
+                        piece_counter += tailpiece_size
+
+                    piece_counter -= length
 
             for section in sections_to_remove:
                 self.sections.remove(section)
@@ -95,6 +110,7 @@ y = 250
 width = 8
 height = 8
 speed = 0
+tailpiece_size = 4
 
 image = pygame.image.load('./content/snakehead.jpg')
 head = pygame.transform.scale(image, (width, height))
