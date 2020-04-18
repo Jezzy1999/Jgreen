@@ -23,7 +23,7 @@ class Tail():
         self.length = 0
         self.sections = []
 
-    def update(self, x, y, speed, direction):
+    def update(self, x, y, speed):
         if self.sections:
 
             currentx = x
@@ -33,7 +33,6 @@ class Tail():
             self.sections[0]["length"] += speed
 
             piece_counter = 0
-            tail_pieces = []
             sections_to_remove = []
             for section in self.sections:
                 total_length += section["length"]
@@ -72,7 +71,7 @@ class Tail():
                             win,
                             (255, 0, 0),
                             (int(xsection + (stepx / 2)), int(ysection + (stepy / 2))), 
-                            int(tailpiece_diameter / 2),
+                            int(tailpiece_radius),
                             1
                         )
                         xsection += stepx
@@ -89,7 +88,6 @@ class Tail():
         if self.length:
             self.sections.insert(0, {
                 "length":0,
-                "pos":(x, y),
                 "direction":direction
             })
 
@@ -160,7 +158,7 @@ while run:
         background=(234, 234, 122)
     win.fill(background)
 
-    tail.update(x, y, speed, direction)
+    tail.update(x, y, speed)
 
     pygame.draw.circle(win, (255,0,0), (x, y), int(head_radius), 1)
     pygame.display.flip()
