@@ -46,45 +46,37 @@ class Tail():
                     stepx = 0
                     stepy = 0
                     if section["direction"] == LEFT:
-                        stepx = tailpiece_size
+                        stepx = tailpiece_diameter
                         xsection = currentx
                         ysection = currenty
-                        endx = xsection + length
-                        endy = currenty
                         currentx += length
                     elif section["direction"] == RIGHT:
-                        stepx = -tailpiece_size
+                        stepx = -tailpiece_diameter
                         xsection = currentx
                         ysection = currenty
-                        endx = xsection - length
-                        endy = currenty
                         currentx -= length
                     elif section["direction"] == UP:
-                        stepy = tailpiece_size
+                        stepy = tailpiece_diameter
                         xsection = currentx
                         ysection = currenty
-                        endx = xsection
-                        endy = ysection + length
                         currenty += length
                     elif section["direction"] == DOWN:
-                        stepy = -tailpiece_size
+                        stepy = -tailpiece_diameter
                         xsection = currentx 
                         ysection = currenty
-                        endx = xsection
-                        endy = currenty - length
-                        currenty = endy
+                        currenty -= length
 
                     while piece_counter < length:
                         pygame.draw.circle(
                             win,
                             (255, 0, 0),
                             (int(xsection + (stepx / 2)), int(ysection + (stepy / 2))), 
-                            tailpiece_size,
+                            int(tailpiece_diameter / 2),
                             1
                         )
                         xsection += stepx
                         ysection += stepy
-                        piece_counter += tailpiece_size
+                        piece_counter += tailpiece_diameter
 
                     piece_counter -= length
 
@@ -110,7 +102,7 @@ y = 250
 width = 8
 height = 8
 speed = 0
-tailpiece_size = 4
+tailpiece_diameter = 8
 
 image = pygame.image.load('./content/snakehead.jpg')
 head = pygame.transform.scale(image, (width, height))
