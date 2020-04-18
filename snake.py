@@ -117,8 +117,6 @@ direction = None
 tail = Tail()
 
 while run:
-    pygame.time.delay(100)
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
@@ -152,7 +150,7 @@ while run:
             tail.changed_direction(x, y, direction)
 
     if not speed and direction:
-        speed = 5
+        speed = 2
 
     x += speed if direction == RIGHT else -speed if direction == LEFT else 0
     y += speed if direction == DOWN else -speed if direction == UP else 0
@@ -164,8 +162,8 @@ while run:
 
     tail.update(x, y, speed, direction)
 
-    #win.blit(head, (x, y))
     pygame.draw.circle(win, (255,0,0), (x, y), int(head_radius), 1)
-    pygame.display.update()
+    pygame.display.flip()
+    pygame.time.Clock().tick(60)
 
 pygame.quit()
