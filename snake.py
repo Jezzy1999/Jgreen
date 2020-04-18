@@ -126,17 +126,17 @@ while run:
     keys = pygame.key.get_pressed()
 
     if keys[pygame.K_LEFT]:
-        if not direction == RIGHT:
+        if direction != LEFT and direction != RIGHT:
             direction = LEFT
             tail.changed_direction(x, y, direction)
 
     if keys[pygame.K_RIGHT]:
-        if not direction == LEFT:
+        if direction != LEFT and direction != RIGHT:
             direction = RIGHT
             tail.changed_direction(x, y, direction)
 
     if keys[pygame.K_UP]:
-        if not direction == DOWN:
+        if direction != UP and direction != DOWN:
             direction = UP
             tail.changed_direction(x, y, direction)
 
