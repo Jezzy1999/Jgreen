@@ -28,6 +28,7 @@ class Tail():
 
             currentx = x
             currenty = y
+            initial_radius = int(head_radius)
             total_length = 0
             self.sections[0]["length"] += speed
 
@@ -47,23 +48,23 @@ class Tail():
                     stepy = 0
                     if section["direction"] == LEFT:
                         stepx = tailpiece_diameter
-                        xsection = currentx
+                        xsection = currentx + initial_radius
                         ysection = currenty
                         currentx += length
                     elif section["direction"] == RIGHT:
                         stepx = -tailpiece_diameter
-                        xsection = currentx
+                        xsection = currentx - initial_radius
                         ysection = currenty
                         currentx -= length
                     elif section["direction"] == UP:
                         stepy = tailpiece_diameter
                         xsection = currentx
-                        ysection = currenty
+                        ysection = currenty + initial_radius
                         currenty += length
                     elif section["direction"] == DOWN:
                         stepy = -tailpiece_diameter
                         xsection = currentx 
-                        ysection = currenty
+                        ysection = currenty - initial_radius
                         currenty -= length
 
                     while piece_counter < length:
@@ -79,6 +80,7 @@ class Tail():
                         piece_counter += tailpiece_diameter
 
                     piece_counter -= length
+                    initial_radius = 0
 
             for section in sections_to_remove:
                 self.sections.remove(section)
@@ -102,6 +104,8 @@ y = 250
 width = 8
 height = 8
 speed = 0
+head_diameter = 16
+head_radius = head_diameter / 2
 tailpiece_diameter = 8
 
 image = pygame.image.load('./content/snakehead.jpg')
@@ -160,7 +164,7 @@ while run:
     tail.update(x, y, speed, direction)
 
     #win.blit(head, (x, y))
-    pygame.draw.circle(win, (255,0,0), (x, y), width, 1)
+    pygame.draw.circle(win, (255,0,0), (x, y), int(head_radius), 1)
     pygame.display.update()
 
 pygame.quit()
