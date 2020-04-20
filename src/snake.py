@@ -29,6 +29,7 @@ class Snake():
         self.head_radius = head_diameter / 2
         self.tailpiece_diameter = tailpiece_diameter
         self.tailpiece_radius = tailpiece_diameter / 2
+        self.display_boxes = True
 
     def update(self, win, speed):
 
@@ -123,12 +124,13 @@ class Snake():
             for section in sections_to_remove:
                 self.sections.remove(section)
 
-            for box in section_boxes:
-                pygame.draw.rect(win, 
-                    (0,255,0),
-                    box,
-                    1
-                )
+            if self.display_boxes:
+                for box in section_boxes:
+                    pygame.draw.rect(win, 
+                        (0,255,0),
+                        box,
+                        1
+                    )
 
     def new_section(self, direction):
         if self.length:
@@ -178,8 +180,11 @@ def main_loop(win):
                 direction = DOWN
                 snake.new_section(direction)
 
+        if keys[pygame.K_b]:
+            snake.display_boxes = False if snake.display_boxes else True
+
         if keys[pygame.K_SPACE]:
-            snake.length += speed
+            snake.length += snake.tailpiece_diameter
 
             if not snake.sections:
                 snake.new_section(direction)
@@ -195,6 +200,6 @@ def main_loop(win):
         snake.update(win, speed)
 
         pygame.display.flip()
-        pygame.time.Clock().tick(60)
+        pygame.time.Clock().tick(10)
 
     pygame.quit()
