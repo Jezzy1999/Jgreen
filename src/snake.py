@@ -36,7 +36,7 @@ class Snake():
 
         if self.sections:
             direction = self.sections[0]["direction"]
-            
+
             self.x += speed if direction == RIGHT else -speed if direction == LEFT else 0
             self.y += speed if direction == DOWN else -speed if direction == UP else 0
 
@@ -48,6 +48,7 @@ class Snake():
 
             piece_counter = 0
             sections_to_remove = []
+            section_boxes = []
             for section in self.sections:
                 total_length += section["length"]
                 if total_length > self.length:
@@ -64,21 +65,45 @@ class Snake():
                         xsection = currentx + initial_radius
                         ysection = currenty
                         currentx += length
+                        section_boxes.append(
+                            (xsection, 
+                             ysection - self.tailpiece_radius, 
+                             length, 
+                             self.tailpiece_diameter
+                        ))
                     elif section["direction"] == RIGHT:
                         stepx = -self.tailpiece_diameter
                         xsection = currentx - initial_radius
                         ysection = currenty
                         currentx -= length
+                        section_boxes.append((
+                            xsection - length,
+                            ysection - self.tailpiece_radius, 
+                            length,
+                            self.tailpiece_diameter
+                        ))
                     elif section["direction"] == UP:
                         stepy = self.tailpiece_diameter
                         xsection = currentx
                         ysection = currenty + initial_radius
                         currenty += length
+                        section_boxes.append((
+                            xsection - self.tailpiece_radius,
+                            ysection,
+                            self.tailpiece_diameter,
+                            length
+                        ))
                     elif section["direction"] == DOWN:
                         stepy = -self.tailpiece_diameter
                         xsection = currentx 
                         ysection = currenty - initial_radius
                         currenty -= length
+                        section_boxes.append((
+                            xsection - self.tailpiece_radius,
+                            ysection - length,
+                            self.tailpiece_diameter,
+                            length
+                        ))
 
                     while (piece_counter + self.tailpiece_diameter) < length:
                         pygame.draw.circle(
@@ -97,6 +122,13 @@ class Snake():
 
             for section in sections_to_remove:
                 self.sections.remove(section)
+
+            for box in section_boxes:
+                pygame.draw.rect(win, 
+                    (0,255,0),
+                    box,
+                    1
+                )
 
     def new_section(self, direction):
         if self.length:
