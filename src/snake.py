@@ -19,8 +19,10 @@ DOWN = 4
 
 class Snake():
 
-    def __init__(self, head_diameter, tailpiece_diameter):
+    def __init__(self, xstart, ystart, head_diameter, tailpiece_diameter):
 
+        self.x = xstart
+        self.y = ystart
         self.length = 0
         self.sections = []
         self.head_diameter = head_diameter
@@ -28,13 +30,18 @@ class Snake():
         self.tailpiece_diameter = tailpiece_diameter
         self.tailpiece_radius = tailpiece_diameter / 2
 
-    def update(self, win, x, y, speed):
-        pygame.draw.circle(win, (255,0,0), (x, y), int(self.head_radius), 1)
+    def update(self, win, speed):
+
+        pygame.draw.circle(win, (255,0,0), (self.x, self.y), int(self.head_radius), 1)
 
         if self.sections:
+            direction = self.sections[0]["direction"]
+            
+            self.x += speed if direction == RIGHT else -speed if direction == LEFT else 0
+            self.y += speed if direction == DOWN else -speed if direction == UP else 0
 
-            currentx = x
-            currenty = y
+            currentx = self.x
+            currenty = self.y
             initial_radius = int(self.head_radius)
             total_length = 0
             self.sections[0]["length"] += speed
@@ -91,7 +98,7 @@ class Snake():
             for section in sections_to_remove:
                 self.sections.remove(section)
 
-    def new_section(self, x, y, direction):
+    def new_section(self, direction):
         if self.length:
             self.sections.insert(0, {
                 "length":0,
@@ -99,8 +106,6 @@ class Snake():
             })
 
 def main_loop(win):
-    x = 250
-    y = 250
     width = 8
     height = 8
     speed = 0
@@ -112,7 +117,7 @@ def main_loop(win):
 
     run = True
     direction = None
-    snake = Snake(head_diameter, tailpiece_diameter)
+    snake = Snake(250, 250, head_diameter, tailpiece_diameter)
 
     while run:
         for event in pygame.event.get():
@@ -124,41 +129,38 @@ def main_loop(win):
         if keys[pygame.K_LEFT]:
             if direction != LEFT and direction != RIGHT:
                 direction = LEFT
-                snake.new_section(x, y, direction)
+                snake.new_section(direction)
 
         if keys[pygame.K_RIGHT]:
             if direction != LEFT and direction != RIGHT:
                 direction = RIGHT
-                snake.new_section(x, y, direction)
+                snake.new_section(direction)
 
         if keys[pygame.K_UP]:
             if direction != UP and direction != DOWN:
                 direction = UP
-                snake.new_section(x, y, direction)
+                snake.new_section(direction)
 
         if keys[pygame.K_DOWN]:
             if direction != UP and direction != DOWN:
                 direction = DOWN
-                snake.new_section(x, y, direction)
+                snake.new_section(direction)
 
         if keys[pygame.K_SPACE]:
             snake.length += speed
 
             if not snake.sections:
-                snake.new_section(x, y, direction)
+                snake.new_section(direction)
 
         if not speed and direction:
             speed = 2
 
-        x += speed if direction == RIGHT else -speed if direction == LEFT else 0
-        y += speed if direction == DOWN else -speed if direction == UP else 0
-
         background=(0, 0, 0)
-        if hitscreenedge(x, y, width, height):
-            background=(234, 234, 122)
+        #if hitscreenedge(x, y, width, height):
+        #    background=(234, 234, 122)
         win.fill(background)
 
-        snake.update(win, x, y, speed)
+        snake.update(win, speed)
 
         pygame.display.flip()
         pygame.time.Clock().tick(60)
