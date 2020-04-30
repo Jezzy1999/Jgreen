@@ -43,11 +43,11 @@ class Snake():
 
             currentx = self.x
             currenty = self.y
-            initial_radius = int(self.head_radius)
             total_length = 0
             self.sections[0]["length"] += speed
 
-            piece_counter = 0
+            current_piece_counter = int(self.head_radius)
+
             sections_to_remove = []
             section_boxes = []
             for section in self.sections:
@@ -63,7 +63,7 @@ class Snake():
                     stepy = 0
                     if section["direction"] == LEFT:
                         stepx = self.tailpiece_diameter
-                        xsection = currentx + initial_radius
+                        xsection = currentx + current_piece_counter
                         ysection = currenty
                         currentx += length
                         section_boxes.append(
@@ -74,7 +74,7 @@ class Snake():
                         ))
                     elif section["direction"] == RIGHT:
                         stepx = -self.tailpiece_diameter
-                        xsection = currentx - initial_radius
+                        xsection = currentx - current_piece_counter
                         ysection = currenty
                         currentx -= length
                         section_boxes.append((
@@ -86,7 +86,7 @@ class Snake():
                     elif section["direction"] == UP:
                         stepy = self.tailpiece_diameter
                         xsection = currentx
-                        ysection = currenty + initial_radius
+                        ysection = currenty + current_piece_counter
                         currenty += length
                         section_boxes.append((
                             xsection - self.tailpiece_radius,
@@ -97,7 +97,7 @@ class Snake():
                     elif section["direction"] == DOWN:
                         stepy = -self.tailpiece_diameter
                         xsection = currentx 
-                        ysection = currenty - initial_radius
+                        ysection = currenty - current_piece_counter
                         currenty -= length
                         section_boxes.append((
                             xsection - self.tailpiece_radius,
@@ -106,20 +106,19 @@ class Snake():
                             length
                         ))
 
-                    while (piece_counter + self.tailpiece_diameter) < length:
+                    while (current_piece_counter < length):
                         pygame.draw.circle(
                             win,
                             (255, 0, 0),
-                            (int(xsection + (stepx / 2)), int(ysection + (stepy / 2))), 
+                            (int(xsection), int(ysection)), 
                             int(self.tailpiece_radius),
                             1
                         )
                         xsection += stepx
                         ysection += stepy
-                        piece_counter += self.tailpiece_diameter
+                        current_piece_counter += self.tailpiece_diameter
 
-                    piece_counter -= length
-                    initial_radius = 0
+                    current_piece_counter -= length
 
             for section in sections_to_remove:
                 self.sections.remove(section)
@@ -143,8 +142,8 @@ def main_loop(win):
     width = 8
     height = 8
     speed = 0
-    head_diameter = 16
-    tailpiece_diameter = 8
+    head_diameter = 64
+    tailpiece_diameter = 32
 
     image = pygame.image.load('./content/snakehead.jpg')
     head = pygame.transform.scale(image, (width, height))
@@ -190,7 +189,7 @@ def main_loop(win):
                 snake.new_section(direction)
 
         if not speed and direction:
-            speed = 2
+            speed = 4
 
         background=(0, 0, 0)
         #if hitscreenedge(x, y, width, height):
@@ -200,6 +199,6 @@ def main_loop(win):
         snake.update(win, speed)
 
         pygame.display.flip()
-        pygame.time.Clock().tick(10)
+        pygame.time.Clock().tick(60)
 
     pygame.quit()
