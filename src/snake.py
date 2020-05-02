@@ -50,6 +50,10 @@ class Snake():
 
             sections_to_remove = []
             section_boxes = []
+            box_xmin = 1000
+            box_xmax = 0
+            box_ymin = 1000
+            box_ymax = 0
             for section in self.sections:
                 total_length += section["length"]
                 if total_length > self.length:
@@ -66,45 +70,21 @@ class Snake():
                         xsection = currentx + current_piece_counter
                         ysection = currenty
                         currentx += length
-                        section_boxes.append(
-                            (xsection, 
-                             ysection - self.tailpiece_radius, 
-                             length, 
-                             self.tailpiece_diameter
-                        ))
                     elif section["direction"] == RIGHT:
                         stepx = -self.tailpiece_diameter
                         xsection = currentx - current_piece_counter
                         ysection = currenty
                         currentx -= length
-                        section_boxes.append((
-                            xsection - length,
-                            ysection - self.tailpiece_radius, 
-                            length,
-                            self.tailpiece_diameter
-                        ))
                     elif section["direction"] == UP:
                         stepy = self.tailpiece_diameter
                         xsection = currentx
                         ysection = currenty + current_piece_counter
                         currenty += length
-                        section_boxes.append((
-                            xsection - self.tailpiece_radius,
-                            ysection,
-                            self.tailpiece_diameter,
-                            length
-                        ))
                     elif section["direction"] == DOWN:
                         stepy = -self.tailpiece_diameter
                         xsection = currentx 
                         ysection = currenty - current_piece_counter
                         currenty -= length
-                        section_boxes.append((
-                            xsection - self.tailpiece_radius,
-                            ysection - length,
-                            self.tailpiece_diameter,
-                            length
-                        ))
 
                     while (current_piece_counter < length):
                         pygame.draw.circle(
@@ -114,10 +94,20 @@ class Snake():
                             int(self.tailpiece_radius),
                             1
                         )
+                        if box_xmin > int(xsection - self.tailpiece_radius): 
+                            box_xmin = int(xsection - self.tailpiece_radius)
+                        if box_xmax < int(xsection + self.tailpiece_radius): 
+                            box_xmax = int(xsection + self.tailpiece_radius)
+                        if box_ymin > int(ysection - self.tailpiece_radius): 
+                            box_ymin = int(ysection - self.tailpiece_radius)
+                        if box_ymax < int(ysection + self.tailpiece_radius): 
+                            box_ymax = int(ysection + self.tailpiece_radius)
                         xsection += stepx
                         ysection += stepy
                         current_piece_counter += self.tailpiece_diameter
 
+                    if box_xmax > 0:
+                        section_boxes.append((box_xmin, box_ymin, box_xmax - box_xmin, box_ymax - box_ymin))
                     current_piece_counter -= length
 
             for section in sections_to_remove:
@@ -189,7 +179,7 @@ def main_loop(win):
                 snake.new_section(direction)
 
         if not speed and direction:
-            speed = 4
+            speed = 2
 
         background=(0, 0, 0)
         #if hitscreenedge(x, y, width, height):
@@ -199,6 +189,6 @@ def main_loop(win):
         snake.update(win, speed)
 
         pygame.display.flip()
-        pygame.time.Clock().tick(60)
+        pygame.time.Clock().tick(5)
 
     pygame.quit()
