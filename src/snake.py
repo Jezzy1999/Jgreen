@@ -50,11 +50,12 @@ class Snake():
 
             sections_to_remove = []
             section_boxes = []
-            box_xmin = 1000
-            box_xmax = 0
-            box_ymin = 1000
-            box_ymax = 0
             for section in self.sections:
+                box_xmin = 1000
+                box_xmax = 0
+                box_ymin = 1000
+                box_ymax = 0
+
                 total_length += section["length"]
                 if total_length > self.length:
                     section["length"] -= (total_length - self.length)
