@@ -51,6 +51,8 @@ class Snake():
             current_piece_counter = int(self.head_radius)
 
             sections_to_remove = []
+
+            section_circles = []
             section_boxes = []
             for section in self.sections:
                 box_xmin = 1000
@@ -97,6 +99,9 @@ class Snake():
                             int(self.tailpiece_radius),
                             1
                         )
+                        section_circles.append((xsection, ysection))
+
+
                         if box_xmin > int(xsection - self.tailpiece_radius): 
                             box_xmin = int(xsection - self.tailpiece_radius)
                         if box_xmax < int(xsection + self.tailpiece_radius): 
@@ -116,6 +121,11 @@ class Snake():
             for section in sections_to_remove:
                 self.sections.remove(section)
 
+            if self.check_head_collision(section_circles[2:]):
+                text_image = font.render("DEAD", True, (250,200,50))  
+                win.blit(text_image, (100 - text_image.get_width() // 2, 400 - text_image.get_height() // 2))
+
+
             if self.display_boxes:
                 for box in section_boxes:
                     pygame.draw.rect(win, 
@@ -127,6 +137,14 @@ class Snake():
         text_image = font.render("Score: 0000", True, (50,200,50))
         win.blit(text_image, (400 - text_image.get_width() // 2, 30 - text_image.get_height() // 2))
 
+    def check_head_collision(self, section_circles):
+        min_distance = self.head_radius + self.tailpiece_radius
+        for circle in section_circles:
+            if abs(self.x - circle[0]) < min_distance and \
+               abs(self.y - circle[1]) < min_distance:
+               return True
+
+        return False
 
     def new_section(self, direction):
         if self.length:
