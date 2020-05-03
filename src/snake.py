@@ -129,6 +129,16 @@ class Snake():
                 "direction":direction
             })
 
+    def possible_to_move(self, current_direction, desired_direction):
+        if desired_direction == LEFT or desired_direction == RIGHT:
+            if current_direction != LEFT and current_direction != RIGHT:
+                return True
+        elif desired_direction == UP or desired_direction == DOWN:
+            if current_direction != UP and current_direction != DOWN:
+                return True
+        return False
+
+
 def main_loop(win):
     width = 8
     height = 8
@@ -143,6 +153,12 @@ def main_loop(win):
     direction = None
     snake = Snake(250, 250, head_diameter, tailpiece_diameter)
 
+    directions = {
+        pygame.K_LEFT: LEFT,
+        pygame.K_RIGHT: RIGHT,
+        pygame.K_UP: UP,
+        pygame.K_DOWN: DOWN,
+    }
     while run:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -150,25 +166,11 @@ def main_loop(win):
 
         keys = pygame.key.get_pressed()
 
-        if keys[pygame.K_LEFT]:
-            if direction != LEFT and direction != RIGHT:
-                direction = LEFT
+        for key in directions:
+            if keys[key] and snake.possible_to_move(direction, directions[key]):
+                direction = directions[key]
                 snake.new_section(direction)
-
-        if keys[pygame.K_RIGHT]:
-            if direction != LEFT and direction != RIGHT:
-                direction = RIGHT
-                snake.new_section(direction)
-
-        if keys[pygame.K_UP]:
-            if direction != UP and direction != DOWN:
-                direction = UP
-                snake.new_section(direction)
-
-        if keys[pygame.K_DOWN]:
-            if direction != UP and direction != DOWN:
-                direction = DOWN
-                snake.new_section(direction)
+                break
 
         if keys[pygame.K_b]:
             snake.display_boxes = False if snake.display_boxes else True
