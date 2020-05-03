@@ -130,6 +130,9 @@ class Snake():
             })
 
     def possible_to_move(self, current_direction, desired_direction):
+        if self.sections and self.sections[0]["length"] < (self.head_radius + self.tailpiece_radius):
+            return False
+            
         if desired_direction == LEFT or desired_direction == RIGHT:
             if current_direction != LEFT and current_direction != RIGHT:
                 return True
