@@ -17,6 +17,8 @@ RIGHT = 2
 UP = 3
 DOWN = 4
 
+font = None
+
 class Snake():
 
     def __init__(self, xstart, ystart, head_diameter, tailpiece_diameter):
@@ -31,7 +33,7 @@ class Snake():
         self.tailpiece_radius = tailpiece_diameter / 2
         self.display_boxes = True
 
-    def update(self, win, speed):
+    def update(self, win, font, speed):
 
         pygame.draw.circle(win, (255,0,0), (self.x, self.y), int(self.head_radius), 1)
 
@@ -122,6 +124,10 @@ class Snake():
                         1
                     )
 
+        text_image = font.render("Score: 0000", True, (50,200,50))
+        win.blit(text_image, (400 - text_image.get_width() // 2, 30 - text_image.get_height() // 2))
+
+
     def new_section(self, direction):
         if self.length:
             self.sections.insert(0, {
@@ -132,7 +138,7 @@ class Snake():
     def possible_to_move(self, current_direction, desired_direction):
         if self.sections and self.sections[0]["length"] < (self.head_radius + self.tailpiece_radius):
             return False
-            
+
         if desired_direction == LEFT or desired_direction == RIGHT:
             if current_direction != LEFT and current_direction != RIGHT:
                 return True
@@ -148,6 +154,8 @@ def main_loop(win):
     speed = 0
     head_diameter = 64
     tailpiece_diameter = 32
+
+    font = pygame.font.Font("content/PixelSplitter-Bold.ttf", 26)
 
     image = pygame.image.load('./content/snakehead.jpg')
     head = pygame.transform.scale(image, (width, height))
@@ -192,7 +200,7 @@ def main_loop(win):
         #    background=(234, 234, 122)
         win.fill(background)
 
-        snake.update(win, speed)
+        snake.update(win, font, speed)
 
         pygame.display.flip()
         pygame.time.Clock().tick(5)
