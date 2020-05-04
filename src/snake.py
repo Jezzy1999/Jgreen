@@ -1,4 +1,5 @@
 import pygame
+from os import path
 
 def hitscreenedge(x, y, width, height):
     if x < 0:
@@ -173,10 +174,10 @@ def main_loop(win):
     head_diameter = 64
     tailpiece_diameter = 32
 
-    font = pygame.font.Font("content/PixelSplitter-Bold.ttf", 26)
+    font = pygame.font.Font(path.join("content", "PixelSplitter-Bold.ttf"), 26)
 
-    image = pygame.image.load('./content/snakehead.jpg')
-    head = pygame.transform.scale(image, (width, height))
+    #image = pygame.image.load('./content/snakehead.jpg')
+    #head = pygame.transform.scale(image, (width, height))
 
     run = True
     direction = None
