@@ -44,6 +44,7 @@ class Snake:
         self.section_boxes = []
         self.speed = 0
         self.direction = None
+        self.score = 0
 
     def reset(self, xstart, ystart, direction):
         self.x = xstart
@@ -53,6 +54,7 @@ class Snake:
         self.new_section(direction)
         self.speed = 2
         self.direction = direction
+        self.score = 0
 
     def draw_head(self, win):
         pygame.draw.circle(win, (255, 0, 0), (self.x, self.y), int(self.head_radius))
@@ -246,7 +248,7 @@ class Snake:
                 for box in self.section_boxes:
                     pygame.draw.rect(win, (0, 255, 0), box, 1)
 
-        text_image = font.render("Score: 0000", True, (50, 200, 50))
+        text_image = font.render(f'Score:{self.score:04}', True, (50, 200, 50))
         win.blit(
             text_image,
             (400 - text_image.get_width() // 2, 30 - text_image.get_height() // 2),
@@ -303,6 +305,10 @@ class Snake:
                 return True
         return False
 
+    def eat_food(self):
+        self.length += self.tailpiece_radius
+        self.speed += 2
+        self.score += 1
 
 FOOD_SIZE = 10
 
@@ -317,6 +323,11 @@ class Food:
     def update(self, win, snake):
         if self.active:
             pygame.draw.circle(win, (0, 0, 200), self.position, FOOD_SIZE)
+
+            if snake.collides_with(self.position[0], self.position[1], FOOD_SIZE):
+                snake.eat_food()
+                self.active = False
+                self.countdown = random.randrange(2, 5) * 60
         else:
             self.countdown -= 1
             if self.countdown == 0:
