@@ -37,20 +37,41 @@ class Snake():
         self.tailpiece_radius = tailpiece_diameter / 2
         self.display_boxes = True
 
-    def draw_head(self, win):
+    def draw_head(self, win, direction):
         pygame.draw.circle(win, (255, 0, 0), (self.x, self.y), int(self.head_radius))
 
         eye_radius = self.head_radius / 4
         pupil_radius = eye_radius / 3
-        for offset in [-self.head_radius / 2, self.head_radius / 2]:
+        if direction == RIGHT:
+            offset = self.head_radius / 2
             pygame.draw.circle(win, (250, 250, 250), (int(self.x + offset), self.y - int(self.head_radius / 3)),
                                int(eye_radius))
-            pygame.draw.circle(win, (20, 20, 0), (int(self.x + offset), self.y - int(self.head_radius / 3)),
+            pygame.draw.circle(win, (20, 20, 0), (int(self.x + offset + int(eye_radius * 0.7)), self.y - int(self.head_radius / 3)),
                                int(pupil_radius))
+        elif direction == LEFT:
+            offset = -self.head_radius / 2
+            pygame.draw.circle(win, (250, 250, 250), (int(self.x + offset), self.y - int(self.head_radius / 3)),
+                               int(eye_radius))
+            pygame.draw.circle(win, (20, 20, 0), (int(self.x + offset - int(eye_radius * 0.7)), self.y - int(self.head_radius / 3)),
+                               int(pupil_radius))
+        if direction == UP:
+            for offset in [-self.head_radius / 2, self.head_radius / 2]:
+                pygame.draw.circle(win, (250, 250, 250), (int(self.x + offset), self.y - int(self.head_radius / 3)),
+                                   int(eye_radius))
+                pygame.draw.circle(win, (20, 20, 0), (int(self.x + offset), self.y - int(self.head_radius / 3) - int(eye_radius * 0.7)),
+                                   int(pupil_radius))
+        elif direction == DOWN:
+            pygame.draw.circle(win, (255, 0, 0), (self.x, self.y), int(self.head_radius))
 
-    def update(self, win, font, speed):
+            for offset in [-self.head_radius / 2, self.head_radius / 2]:
+                pygame.draw.circle(win, (250, 250, 250), (int(self.x + offset), self.y + int(self.head_radius / 3)),
+                                   int(eye_radius))
+                pygame.draw.circle(win, (20, 20, 0), (int(self.x + offset), self.y + int(self.head_radius / 3) + int(eye_radius * 0.7)),
+                                   int(pupil_radius))
 
-        self.draw_head(win)
+    def update(self, win, font, speed, direction):
+
+        self.draw_head(win, direction)
 
         if self.sections:
             direction = self.sections[0]["direction"]
@@ -231,7 +252,7 @@ def main_loop(win):
         #    background=(234, 234, 122)
         win.fill(background)
 
-        snake.update(win, font, speed)
+        snake.update(win, font, speed, direction)
 
         pygame.display.flip()
         pygame.time.Clock().tick(60)
