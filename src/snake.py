@@ -28,24 +28,35 @@ font = None
 
 
 class Snake:
-    def __init__(self, xstart, ystart, head_diameter, tailpiece_diameter):
+    def __init__(self, head_diameter, tailpiece_diameter):
 
-        self.x = xstart
-        self.y = ystart
-        self.length = 0
-        self.sections = []
         self.head_diameter = head_diameter
         self.head_radius = head_diameter / 2
         self.tailpiece_diameter = tailpiece_diameter
         self.tailpiece_radius = tailpiece_diameter / 2
-        self.display_boxes = True
+        self.display_boxes = False
+        self.x = 0
+        self.y = 0
+        self.length = 0
+        self.sections = []
+        self.speed = 0
+        self.direction = None
 
-    def draw_head(self, win, direction):
+    def reset(self, xstart, ystart, direction):
+        self.x = xstart
+        self.y = ystart
+        self.length = (self.tailpiece_diameter * 2) + 1
+        self.sections = []
+        self.new_section(direction)
+        self.speed = 2
+        self.direction = direction
+
+    def draw_head(self, win):
         pygame.draw.circle(win, (255, 0, 0), (self.x, self.y), int(self.head_radius))
 
         eye_radius = self.head_radius / 4
         pupil_radius = eye_radius / 3
-        if direction == RIGHT:
+        if self.direction == RIGHT:
             offset = self.head_radius / 2
             pygame.draw.circle(
                 win,
@@ -62,7 +73,7 @@ class Snake:
                 ),
                 int(pupil_radius),
             )
-        elif direction == LEFT:
+        elif self.direction == LEFT:
             offset = -self.head_radius / 2
             pygame.draw.circle(
                 win,
@@ -79,7 +90,7 @@ class Snake:
                 ),
                 int(pupil_radius),
             )
-        if direction == UP:
+        if self.direction == UP:
             for offset in [-self.head_radius / 2, self.head_radius / 2]:
                 pygame.draw.circle(
                     win,
@@ -96,7 +107,7 @@ class Snake:
                     ),
                     int(pupil_radius),
                 )
-        elif direction == DOWN:
+        elif self.direction == DOWN:
             pygame.draw.circle(
                 win, (255, 0, 0), (self.x, self.y), int(self.head_radius)
             )
@@ -118,23 +129,33 @@ class Snake:
                     int(pupil_radius),
                 )
 
-    def update(self, win, font, speed, direction):
+    def update(self, win, font):
 
         died = False
-        self.draw_head(win, direction)
+        self.draw_head(win)
 
         if self.sections:
             direction = self.sections[0]["direction"]
 
             self.x += (
-                speed if direction == RIGHT else -speed if direction == LEFT else 0
+                self.speed
+                if direction == RIGHT
+                else -self.speed
+                if direction == LEFT
+                else 0
             )
-            self.y += speed if direction == DOWN else -speed if direction == UP else 0
+            self.y += (
+                self.speed
+                if direction == DOWN
+                else -self.speed
+                if direction == UP
+                else 0
+            )
 
             currentx = self.x
             currenty = self.y
             total_length = 0
-            self.sections[0]["length"] += speed
+            self.sections[0]["length"] += self.speed
 
             current_piece_counter = int(self.head_radius)
 
@@ -216,15 +237,6 @@ class Snake:
                 self.sections.remove(section)
 
             if self.check_head_collision(section_circles[2:]):
-                """text_image = font.render("DEAD", True, (250, 200, 50))
-                win.blit(
-                    text_image,
-                    (
-                        100 - text_image.get_width() // 2,
-                        400 - text_image.get_height() // 2,
-                    ),
-                )
-                """
                 died = True
 
             if self.display_boxes:
@@ -253,17 +265,17 @@ class Snake:
         if self.length:
             self.sections.insert(0, {"length": 0, "direction": direction})
 
-    def possible_to_move(self, current_direction, desired_direction):
+    def possible_to_move(self, desired_direction):
         if self.sections and self.sections[0]["length"] < (
             self.head_radius + self.tailpiece_radius
         ):
             return False
 
         if desired_direction == LEFT or desired_direction == RIGHT:
-            if current_direction != LEFT and current_direction != RIGHT:
+            if self.direction != LEFT and self.direction != RIGHT:
                 return True
         elif desired_direction == UP or desired_direction == DOWN:
-            if current_direction != UP and current_direction != DOWN:
+            if self.direction != UP and self.direction != DOWN:
                 return True
         return False
 
@@ -271,18 +283,13 @@ class Snake:
 def main_loop(win):
     width = 8
     height = 8
-    speed = 0
     head_diameter = 64
     tailpiece_diameter = 32
 
     font = pygame.font.Font(path.join("content", "PixelSplitter-Bold.ttf"), 26)
 
-    # image = pygame.image.load('./content/snakehead.jpg')
-    # head = pygame.transform.scale(image, (width, height))
-
     run = True
-    direction = None
-    snake = Snake(250, 250, head_diameter, tailpiece_diameter)
+    snake = Snake(head_diameter, tailpiece_diameter)
 
     directions = {
         pygame.K_LEFT: LEFT,
@@ -322,18 +329,19 @@ def main_loop(win):
 
             countdown_to_next_state -= 1
             if countdown_to_next_state == 0:
+                snake.reset(250, 250, RIGHT)
                 state = PLAYING
 
         elif state == PLAYING:
             for key in directions:
-                if keys[key] and snake.possible_to_move(direction, directions[key]):
-                    direction = directions[key]
-                    snake.new_section(direction)
+                if keys[key] and snake.possible_to_move(directions[key]):
+                    snake.direction = directions[key]
+                    snake.new_section(snake.direction)
                     break
 
             if keys[pygame.K_b]:
                 snake.display_boxes = False if snake.display_boxes else True
-
+            """
             if keys[pygame.K_SPACE]:
                 snake.length += snake.tailpiece_diameter
 
@@ -342,13 +350,13 @@ def main_loop(win):
 
             if not speed and direction:
                 speed = 2
-
+            """
             background = (0, 0, 0)
             # if hitscreenedge(x, y, width, height):
             #    background=(234, 234, 122)
             win.fill(background)
 
-            if snake.update(win, font, speed, direction):
+            if snake.update(win, font):
                 state = DEAD
                 countdown_to_next_state = (5 * 60) - 1
 
