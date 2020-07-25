@@ -248,7 +248,7 @@ class Snake:
                 for box in self.section_boxes:
                     pygame.draw.rect(win, (0, 255, 0), box, 1)
 
-        text_image = font.render(f'Score:{self.score:04}', True, (50, 200, 50))
+        text_image = font.render(f"Score:{self.score:04}", True, (50, 200, 50))
         win.blit(
             text_image,
             (400 - text_image.get_width() // 2, 30 - text_image.get_height() // 2),
@@ -269,9 +269,7 @@ class Snake:
     def collides_with(self, x, y, size):
         # Check head first
         min_distance = self.head_radius + size
-        if abs(self.x - x) < min_distance:
-            return True
-        if abs(self.y - y) < min_distance:
+        if (abs(self.x - x) < min_distance) and abs(self.y - y) < min_distance:
             return True
 
         # Now check sections
@@ -309,6 +307,7 @@ class Snake:
         self.length += self.tailpiece_radius
         self.speed += 2
         self.score += 1
+
 
 FOOD_SIZE = 10
 
