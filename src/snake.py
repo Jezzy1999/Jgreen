@@ -1,4 +1,6 @@
 import pygame
+import random
+
 from os import path
 
 
@@ -39,6 +41,7 @@ class Snake:
         self.y = 0
         self.length = 0
         self.sections = []
+        self.section_boxes = []
         self.speed = 0
         self.direction = None
 
@@ -162,7 +165,7 @@ class Snake:
             sections_to_remove = []
 
             section_circles = []
-            section_boxes = []
+            self.section_boxes = []
             for section in self.sections:
                 box_xmin = 1000
                 box_xmax = 0
@@ -223,7 +226,7 @@ class Snake:
                         current_piece_counter += self.tailpiece_diameter
 
                     if box_xmax > 0:
-                        section_boxes.append(
+                        self.section_boxes.append(
                             (
                                 box_xmin,
                                 box_ymin,
@@ -240,7 +243,7 @@ class Snake:
                 died = True
 
             if self.display_boxes:
-                for box in section_boxes:
+                for box in self.section_boxes:
                     pygame.draw.rect(win, (0, 255, 0), box, 1)
 
         text_image = font.render("Score: 0000", True, (50, 200, 50))
@@ -259,6 +262,27 @@ class Snake:
             ):
                 return True
 
+        return False
+
+    def collides_with(self, x, y, size):
+        # Check head first
+        min_distance = self.head_radius + size
+        if abs(self.x - x) < min_distance:
+            return True
+        if abs(self.y - y) < min_distance:
+            return True
+
+        # Now check sections
+        for box in self.section_boxes:
+            if (x + size) < box[0]:
+                continue
+            if (x - size) > (box[0] + box[2]):
+                continue
+            if (y + size) < box[1]:
+                continue
+            if (y - size) > (box[1] + box[3]):
+                continue
+            return True
         return False
 
     def new_section(self, direction):
@@ -280,9 +304,38 @@ class Snake:
         return False
 
 
+FOOD_SIZE = 10
+
+
+class Food:
+    def __init__(self, play_area_size):
+        self.play_area_size = play_area_size
+        self.active = False
+        self.countdown = 5 * 60
+        self.position = None
+
+    def update(self, win, snake):
+        if self.active:
+            pygame.draw.circle(win, (0, 0, 200), self.position, FOOD_SIZE)
+        else:
+            self.countdown -= 1
+            if self.countdown == 0:
+                new_x = random.randrange(
+                    FOOD_SIZE, self.play_area_size[0] - FOOD_SIZE - 1
+                )
+                new_y = random.randrange(
+                    FOOD_SIZE, self.play_area_size[1] - FOOD_SIZE - 1
+                )
+
+                if not snake.collides_with(new_x, new_y, FOOD_SIZE):
+                    self.active = True
+                    self.position = (new_x, new_y)
+                else:
+                    # Try again next frame
+                    self.countdown = 1
+
+
 def main_loop(win):
-    width = 8
-    height = 8
     head_diameter = 64
     tailpiece_diameter = 32
 
@@ -290,6 +343,7 @@ def main_loop(win):
 
     run = True
     snake = Snake(head_diameter, tailpiece_diameter)
+    food = Food((800, 600))
 
     directions = {
         pygame.K_LEFT: LEFT,
@@ -341,16 +395,7 @@ def main_loop(win):
 
             if keys[pygame.K_b]:
                 snake.display_boxes = False if snake.display_boxes else True
-            """
-            if keys[pygame.K_SPACE]:
-                snake.length += snake.tailpiece_diameter
 
-                if not snake.sections:
-                    snake.new_section(direction)
-
-            if not speed and direction:
-                speed = 2
-            """
             background = (0, 0, 0)
             # if hitscreenedge(x, y, width, height):
             #    background=(234, 234, 122)
@@ -359,6 +404,8 @@ def main_loop(win):
             if snake.update(win, font):
                 state = DEAD
                 countdown_to_next_state = (5 * 60) - 1
+
+            food.update(win, snake)
 
         elif state == DEAD:
             text_image = font.render("DEAD", True, (250, 200, 50))
