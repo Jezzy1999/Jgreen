@@ -23,8 +23,7 @@ DOWN = 4
 font = None
 
 
-class Snake():
-
+class Snake:
     def __init__(self, xstart, ystart, head_diameter, tailpiece_diameter):
 
         self.x = xstart
@@ -44,30 +43,76 @@ class Snake():
         pupil_radius = eye_radius / 3
         if direction == RIGHT:
             offset = self.head_radius / 2
-            pygame.draw.circle(win, (250, 250, 250), (int(self.x + offset), self.y - int(self.head_radius / 3)),
-                               int(eye_radius))
-            pygame.draw.circle(win, (20, 20, 0), (int(self.x + offset + int(eye_radius * 0.7)), self.y - int(self.head_radius / 3)),
-                               int(pupil_radius))
+            pygame.draw.circle(
+                win,
+                (250, 250, 250),
+                (int(self.x + offset), self.y - int(self.head_radius / 3)),
+                int(eye_radius),
+            )
+            pygame.draw.circle(
+                win,
+                (20, 20, 0),
+                (
+                    int(self.x + offset + int(eye_radius * 0.7)),
+                    self.y - int(self.head_radius / 3),
+                ),
+                int(pupil_radius),
+            )
         elif direction == LEFT:
             offset = -self.head_radius / 2
-            pygame.draw.circle(win, (250, 250, 250), (int(self.x + offset), self.y - int(self.head_radius / 3)),
-                               int(eye_radius))
-            pygame.draw.circle(win, (20, 20, 0), (int(self.x + offset - int(eye_radius * 0.7)), self.y - int(self.head_radius / 3)),
-                               int(pupil_radius))
+            pygame.draw.circle(
+                win,
+                (250, 250, 250),
+                (int(self.x + offset), self.y - int(self.head_radius / 3)),
+                int(eye_radius),
+            )
+            pygame.draw.circle(
+                win,
+                (20, 20, 0),
+                (
+                    int(self.x + offset - int(eye_radius * 0.7)),
+                    self.y - int(self.head_radius / 3),
+                ),
+                int(pupil_radius),
+            )
         if direction == UP:
             for offset in [-self.head_radius / 2, self.head_radius / 2]:
-                pygame.draw.circle(win, (250, 250, 250), (int(self.x + offset), self.y - int(self.head_radius / 3)),
-                                   int(eye_radius))
-                pygame.draw.circle(win, (20, 20, 0), (int(self.x + offset), self.y - int(self.head_radius / 3) - int(eye_radius * 0.7)),
-                                   int(pupil_radius))
+                pygame.draw.circle(
+                    win,
+                    (250, 250, 250),
+                    (int(self.x + offset), self.y - int(self.head_radius / 3)),
+                    int(eye_radius),
+                )
+                pygame.draw.circle(
+                    win,
+                    (20, 20, 0),
+                    (
+                        int(self.x + offset),
+                        self.y - int(self.head_radius / 3) - int(eye_radius * 0.7),
+                    ),
+                    int(pupil_radius),
+                )
         elif direction == DOWN:
-            pygame.draw.circle(win, (255, 0, 0), (self.x, self.y), int(self.head_radius))
+            pygame.draw.circle(
+                win, (255, 0, 0), (self.x, self.y), int(self.head_radius)
+            )
 
             for offset in [-self.head_radius / 2, self.head_radius / 2]:
-                pygame.draw.circle(win, (250, 250, 250), (int(self.x + offset), self.y + int(self.head_radius / 3)),
-                                   int(eye_radius))
-                pygame.draw.circle(win, (20, 20, 0), (int(self.x + offset), self.y + int(self.head_radius / 3) + int(eye_radius * 0.7)),
-                                   int(pupil_radius))
+                pygame.draw.circle(
+                    win,
+                    (250, 250, 250),
+                    (int(self.x + offset), self.y + int(self.head_radius / 3)),
+                    int(eye_radius),
+                )
+                pygame.draw.circle(
+                    win,
+                    (20, 20, 0),
+                    (
+                        int(self.x + offset),
+                        self.y + int(self.head_radius / 3) + int(eye_radius * 0.7),
+                    ),
+                    int(pupil_radius),
+                )
 
     def update(self, win, font, speed, direction):
 
@@ -76,7 +121,9 @@ class Snake():
         if self.sections:
             direction = self.sections[0]["direction"]
 
-            self.x += speed if direction == RIGHT else -speed if direction == LEFT else 0
+            self.x += (
+                speed if direction == RIGHT else -speed if direction == LEFT else 0
+            )
             self.y += speed if direction == DOWN else -speed if direction == UP else 0
 
             currentx = self.x
@@ -98,7 +145,7 @@ class Snake():
 
                 total_length += section["length"]
                 if total_length > self.length:
-                    section["length"] -= (total_length - self.length)
+                    section["length"] -= total_length - self.length
 
                 if section["length"] <= 0:
                     sections_to_remove.append(section)
@@ -127,13 +174,13 @@ class Snake():
                         ysection = currenty - current_piece_counter
                         currenty -= length
 
-                    while (current_piece_counter < length):
+                    while current_piece_counter < length:
                         pygame.draw.circle(
                             win,
                             (255, 0, 0),
                             (int(xsection), int(ysection)),
                             int(self.tailpiece_radius),
-                            1
+                            1,
                         )
                         section_circles.append((xsection, ysection))
 
@@ -150,7 +197,14 @@ class Snake():
                         current_piece_counter += self.tailpiece_diameter
 
                     if box_xmax > 0:
-                        section_boxes.append((box_xmin, box_ymin, box_xmax - box_xmin, box_ymax - box_ymin))
+                        section_boxes.append(
+                            (
+                                box_xmin,
+                                box_ymin,
+                                box_xmax - box_xmin,
+                                box_ymax - box_ymin,
+                            )
+                        )
                     current_piece_counter -= length
 
             for section in sections_to_remove:
@@ -158,37 +212,43 @@ class Snake():
 
             if self.check_head_collision(section_circles[2:]):
                 text_image = font.render("DEAD", True, (250, 200, 50))
-                win.blit(text_image, (100 - text_image.get_width() // 2, 400 - text_image.get_height() // 2))
+                win.blit(
+                    text_image,
+                    (
+                        100 - text_image.get_width() // 2,
+                        400 - text_image.get_height() // 2,
+                    ),
+                )
 
             if self.display_boxes:
                 for box in section_boxes:
-                    pygame.draw.rect(win,
-                                     (0, 255, 0),
-                                     box,
-                                     1
-                                     )
+                    pygame.draw.rect(win, (0, 255, 0), box, 1)
 
         text_image = font.render("Score: 0000", True, (50, 200, 50))
-        win.blit(text_image, (400 - text_image.get_width() // 2, 30 - text_image.get_height() // 2))
+        win.blit(
+            text_image,
+            (400 - text_image.get_width() // 2, 30 - text_image.get_height() // 2),
+        )
 
     def check_head_collision(self, section_circles):
         min_distance = self.head_radius + self.tailpiece_radius
         for circle in section_circles:
-            if abs(self.x - circle[0]) < min_distance and \
-                    abs(self.y - circle[1]) < min_distance:
+            if (
+                abs(self.x - circle[0]) < min_distance
+                and abs(self.y - circle[1]) < min_distance
+            ):
                 return True
 
         return False
 
     def new_section(self, direction):
         if self.length:
-            self.sections.insert(0, {
-                "length": 0,
-                "direction": direction
-            })
+            self.sections.insert(0, {"length": 0, "direction": direction})
 
     def possible_to_move(self, current_direction, desired_direction):
-        if self.sections and self.sections[0]["length"] < (self.head_radius + self.tailpiece_radius):
+        if self.sections and self.sections[0]["length"] < (
+            self.head_radius + self.tailpiece_radius
+        ):
             return False
 
         if desired_direction == LEFT or desired_direction == RIGHT:
