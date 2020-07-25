@@ -20,6 +20,10 @@ RIGHT = 2
 UP = 3
 DOWN = 4
 
+COUNTDOWN = 1
+PLAYING = 2
+DEAD = 3
+
 font = None
 
 
@@ -116,6 +120,7 @@ class Snake:
 
     def update(self, win, font, speed, direction):
 
+        died = False
         self.draw_head(win, direction)
 
         if self.sections:
@@ -211,7 +216,7 @@ class Snake:
                 self.sections.remove(section)
 
             if self.check_head_collision(section_circles[2:]):
-                text_image = font.render("DEAD", True, (250, 200, 50))
+                """text_image = font.render("DEAD", True, (250, 200, 50))
                 win.blit(
                     text_image,
                     (
@@ -219,6 +224,8 @@ class Snake:
                         400 - text_image.get_height() // 2,
                     ),
                 )
+                """
+                died = True
 
             if self.display_boxes:
                 for box in section_boxes:
@@ -229,6 +236,7 @@ class Snake:
             text_image,
             (400 - text_image.get_width() // 2, 30 - text_image.get_height() // 2),
         )
+        return died
 
     def check_head_collision(self, section_circles):
         min_distance = self.head_radius + self.tailpiece_radius
@@ -282,6 +290,9 @@ def main_loop(win):
         pygame.K_UP: UP,
         pygame.K_DOWN: DOWN,
     }
+
+    state = COUNTDOWN
+    countdown_to_next_state = (4 * 60) - 1
     while run:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -289,30 +300,76 @@ def main_loop(win):
 
         keys = pygame.key.get_pressed()
 
-        for key in directions:
-            if keys[key] and snake.possible_to_move(direction, directions[key]):
-                direction = directions[key]
-                snake.new_section(direction)
-                break
+        if state == COUNTDOWN:
+            seconds = int(countdown_to_next_state / 60)
+            if seconds != 0:
+                text = str(seconds)
+            else:
+                text = "GO!"
 
-        if keys[pygame.K_b]:
-            snake.display_boxes = False if snake.display_boxes else True
+            text_image = font.render(text, True, (200, 200, 150))
+            background = (0, 0, 0)
+            # if hitscreenedge(x, y, width, height):
+            #    background=(234, 234, 122)
+            win.fill(background)
+            win.blit(
+                text_image,
+                (
+                    250 - text_image.get_width() // 2,
+                    250 - text_image.get_height() // 2,
+                ),
+            )
 
-        if keys[pygame.K_SPACE]:
-            snake.length += snake.tailpiece_diameter
+            countdown_to_next_state -= 1
+            if countdown_to_next_state == 0:
+                state = PLAYING
 
-            if not snake.sections:
-                snake.new_section(direction)
+        elif state == PLAYING:
+            for key in directions:
+                if keys[key] and snake.possible_to_move(direction, directions[key]):
+                    direction = directions[key]
+                    snake.new_section(direction)
+                    break
 
-        if not speed and direction:
-            speed = 2
+            if keys[pygame.K_b]:
+                snake.display_boxes = False if snake.display_boxes else True
 
-        background = (0, 0, 0)
-        # if hitscreenedge(x, y, width, height):
-        #    background=(234, 234, 122)
-        win.fill(background)
+            if keys[pygame.K_SPACE]:
+                snake.length += snake.tailpiece_diameter
 
-        snake.update(win, font, speed, direction)
+                if not snake.sections:
+                    snake.new_section(direction)
+
+            if not speed and direction:
+                speed = 2
+
+            background = (0, 0, 0)
+            # if hitscreenedge(x, y, width, height):
+            #    background=(234, 234, 122)
+            win.fill(background)
+
+            if snake.update(win, font, speed, direction):
+                state = DEAD
+                countdown_to_next_state = (5 * 60) - 1
+
+        elif state == DEAD:
+            text_image = font.render("DEAD", True, (250, 200, 50))
+            background = (0, 0, 0)
+            # if hitscreenedge(x, y, width, height):
+            #    background=(234, 234, 122)
+            win.fill(background)
+            win.blit(
+                text_image,
+                (
+                    100 - text_image.get_width() // 2,
+                    400 - text_image.get_height() // 2,
+                ),
+            )
+
+            countdown_to_next_state -= 1
+            if countdown_to_next_state == 0:
+                countdown_to_next_state = (4 * 60) - 1
+                state = COUNTDOWN
 
         pygame.display.flip()
         pygame.time.Clock().tick(60)
