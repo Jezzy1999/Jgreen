@@ -1,6 +1,7 @@
 import pygame
 from os import path
 
+
 def hitscreenedge(x, y, width, height):
     if x < 0:
         return True
@@ -11,7 +12,8 @@ def hitscreenedge(x, y, width, height):
     if (y + height) > 500:
         return True
 
-    return  False
+    return False
+
 
 LEFT = 1
 RIGHT = 2
@@ -19,6 +21,7 @@ UP = 3
 DOWN = 4
 
 font = None
+
 
 class Snake():
 
@@ -34,15 +37,16 @@ class Snake():
         self.tailpiece_radius = tailpiece_diameter / 2
         self.display_boxes = True
 
-
     def draw_head(self, win):
-        pygame.draw.circle(win, (255,0,0), (self.x, self.y), int(self.head_radius))
+        pygame.draw.circle(win, (255, 0, 0), (self.x, self.y), int(self.head_radius))
 
-        eye_radius = self.head_radius/ 4
+        eye_radius = self.head_radius / 4
         pupil_radius = eye_radius / 3
         for offset in [-self.head_radius / 2, self.head_radius / 2]:
-            pygame.draw.circle(win, (250, 250, 250), (int(self.x + offset), self.y - int(self.head_radius / 3)), int(eye_radius))
-            pygame.draw.circle(win, (20, 20, 0), (int(self.x + offset), self.y - int(self.head_radius / 3)), int(pupil_radius))
+            pygame.draw.circle(win, (250, 250, 250), (int(self.x + offset), self.y - int(self.head_radius / 3)),
+                               int(eye_radius))
+            pygame.draw.circle(win, (20, 20, 0), (int(self.x + offset), self.y - int(self.head_radius / 3)),
+                               int(pupil_radius))
 
     def update(self, win, font, speed):
 
@@ -74,7 +78,7 @@ class Snake():
                 total_length += section["length"]
                 if total_length > self.length:
                     section["length"] -= (total_length - self.length)
-    
+
                 if section["length"] <= 0:
                     sections_to_remove.append(section)
                 else:
@@ -98,7 +102,7 @@ class Snake():
                         currenty += length
                     elif section["direction"] == DOWN:
                         stepy = -self.tailpiece_diameter
-                        xsection = currentx 
+                        xsection = currentx
                         ysection = currenty - current_piece_counter
                         currenty -= length
 
@@ -106,20 +110,19 @@ class Snake():
                         pygame.draw.circle(
                             win,
                             (255, 0, 0),
-                            (int(xsection), int(ysection)), 
+                            (int(xsection), int(ysection)),
                             int(self.tailpiece_radius),
                             1
                         )
                         section_circles.append((xsection, ysection))
 
-
-                        if box_xmin > int(xsection - self.tailpiece_radius): 
+                        if box_xmin > int(xsection - self.tailpiece_radius):
                             box_xmin = int(xsection - self.tailpiece_radius)
-                        if box_xmax < int(xsection + self.tailpiece_radius): 
+                        if box_xmax < int(xsection + self.tailpiece_radius):
                             box_xmax = int(xsection + self.tailpiece_radius)
-                        if box_ymin > int(ysection - self.tailpiece_radius): 
+                        if box_ymin > int(ysection - self.tailpiece_radius):
                             box_ymin = int(ysection - self.tailpiece_radius)
-                        if box_ymax < int(ysection + self.tailpiece_radius): 
+                        if box_ymax < int(ysection + self.tailpiece_radius):
                             box_ymax = int(ysection + self.tailpiece_radius)
                         xsection += stepx
                         ysection += stepy
@@ -133,35 +136,34 @@ class Snake():
                 self.sections.remove(section)
 
             if self.check_head_collision(section_circles[2:]):
-                text_image = font.render("DEAD", True, (250,200,50))  
+                text_image = font.render("DEAD", True, (250, 200, 50))
                 win.blit(text_image, (100 - text_image.get_width() // 2, 400 - text_image.get_height() // 2))
-
 
             if self.display_boxes:
                 for box in section_boxes:
-                    pygame.draw.rect(win, 
-                        (0,255,0),
-                        box,
-                        1
-                    )
+                    pygame.draw.rect(win,
+                                     (0, 255, 0),
+                                     box,
+                                     1
+                                     )
 
-        text_image = font.render("Score: 0000", True, (50,200,50))
+        text_image = font.render("Score: 0000", True, (50, 200, 50))
         win.blit(text_image, (400 - text_image.get_width() // 2, 30 - text_image.get_height() // 2))
 
     def check_head_collision(self, section_circles):
         min_distance = self.head_radius + self.tailpiece_radius
         for circle in section_circles:
             if abs(self.x - circle[0]) < min_distance and \
-               abs(self.y - circle[1]) < min_distance:
-               return True
+                    abs(self.y - circle[1]) < min_distance:
+                return True
 
         return False
 
     def new_section(self, direction):
         if self.length:
             self.sections.insert(0, {
-                "length":0,
-                "direction":direction
+                "length": 0,
+                "direction": direction
             })
 
     def possible_to_move(self, current_direction, desired_direction):
@@ -186,8 +188,8 @@ def main_loop(win):
 
     font = pygame.font.Font(path.join("content", "PixelSplitter-Bold.ttf"), 26)
 
-    #image = pygame.image.load('./content/snakehead.jpg')
-    #head = pygame.transform.scale(image, (width, height))
+    # image = pygame.image.load('./content/snakehead.jpg')
+    # head = pygame.transform.scale(image, (width, height))
 
     run = True
     direction = None
@@ -224,14 +226,14 @@ def main_loop(win):
         if not speed and direction:
             speed = 2
 
-        background=(0, 0, 0)
-        #if hitscreenedge(x, y, width, height):
+        background = (0, 0, 0)
+        # if hitscreenedge(x, y, width, height):
         #    background=(234, 234, 122)
         win.fill(background)
 
         snake.update(win, font, speed)
 
         pygame.display.flip()
-        pygame.time.Clock().tick(5)
+        pygame.time.Clock().tick(60)
 
     pygame.quit()
